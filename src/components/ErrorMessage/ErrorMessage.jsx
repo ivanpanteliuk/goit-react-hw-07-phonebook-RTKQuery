@@ -4,10 +4,9 @@ import { ErrorContainer, ErrorHeading, ErrorText } from './ErrorMessage.styled';
 export default function ErrorMessage({ message }) {
   return (
     <ErrorContainer>
-      <ErrorHeading className="error-heading">
-        Oops, something went wrong...
-      </ErrorHeading>
-      <ErrorText className="error-message">{message}</ErrorText>
+      <ErrorHeading>Oops, something went wrong...</ErrorHeading>
+      <ErrorText>Error: {message}</ErrorText>
+      <ErrorText>Press "ESC" button or reload page, please</ErrorText>
     </ErrorContainer>
   );
 }

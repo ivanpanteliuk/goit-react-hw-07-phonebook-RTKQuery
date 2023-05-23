@@ -1,42 +1,54 @@
-import { useDispatch, useSelector } from 'react-redux';
+import Loader from './Loader/Loader';
+import {
+  useDeleteContactMutation,
+  useGetContactsQuery,
+} from 'redux/contacts/contactsApi';
+import { selectFilter } from 'redux/selectors';
+import { Notify } from 'notiflix';
+import { useSelector } from 'react-redux';
 import { Heading, MainContainer, MainHeading } from './App/App.styled';
 import ContactForm from './ContactForm';
 import ContactList from './ContactList';
 import FilterInput from './FilterInput';
-import {
-  selectContacts,
-  selectError,
-  selectIsLoading,
-  selectVisibleContacts,
-} from 'redux/selectors';
-import { useEffect } from 'react';
-import { getContacts } from 'redux/operations';
-import ErrorMessage from './ErrorMessage/ErrorMessage';
-import Loader from './Loader/Loader';
 
 export function App() {
-  const contacts = useSelector(selectContacts);
-  const visibleContacts = useSelector(selectVisibleContacts);
-  const error = useSelector(selectError);
-  const isLoading = useSelector(selectIsLoading);
+  const { isLoading, isError, error, data: contacts } = useGetContactsQuery();
 
-  const dispatch = useDispatch();
+  const filter = useSelector(selectFilter);
+  const visibleContacts = contacts?.filter(contact =>
+    contact.name.toLowerCase().includes(filter.toLowerCase())
+  );
+  const [deleteContact, deleteRes] = useDeleteContactMutation();
+  console.log(deleteRes);
 
-  useEffect(() => {
-    dispatch(getContacts());
-  }, [dispatch]);
+  if (isError || deleteRes.isError) {
+    Notify.failure(
+      `${error?.status || deleteRes?.error?.status}! ${
+        error?.error || deleteRes?.error?.data
+      }`
+    );
+  }
+
+  if (deleteRes.isSuccess) {
+    Notify.success(`Contact "${deleteRes.data?.name}" deleted successfully`);
+  }
 
   return (
     <MainContainer>
       <MainHeading>Phonebook</MainHeading>
       <ContactForm />
-      {error && <ErrorMessage message={error} />}
-      {isLoading && <Loader />}
-      {!!contacts.length && (
+
+      {(isLoading || deleteRes.isLoading) && <Loader />}
+      {!!contacts?.length && (
         <>
           <Heading>Contacts</Heading>
-          {contacts.length > 1 && <FilterInput />}
-          {!!visibleContacts.length && <ContactList />}
+          {contacts?.length > 1 && <FilterInput />}
+          {!!visibleContacts?.length && (
+            <ContactList
+              contacts={visibleContacts}
+              deleteContact={deleteContact}
+            />
+          )}
         </>
       )}
     </MainContainer>
