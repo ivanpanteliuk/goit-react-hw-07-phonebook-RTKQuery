@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Heading } from 'components/App/App.styled';
 import ContactList from 'components/ContactList/ContactList';
 import FilterInput from 'components/FilterInput/FilterInput';
@@ -7,7 +8,7 @@ import { useSelector } from 'react-redux';
 import { useGetContactsQuery } from 'redux/contacts/contactsApi';
 import { selectFilter } from 'redux/selectors';
 
-export const ContactsSection = () => {
+export const ContactsSection = ({ deleteContact }) => {
   const { isLoading, isError, error, data: contacts } = useGetContactsQuery();
   const filter = useSelector(selectFilter);
   const visibleContacts = contacts?.filter(contact =>
@@ -26,7 +27,10 @@ export const ContactsSection = () => {
           <Heading>Contacts</Heading>
           {contacts?.length > 1 && <FilterInput />}
           {!!visibleContacts?.length && (
-            <ContactList contacts={visibleContacts} />
+            <ContactList
+              contacts={visibleContacts}
+              deleteContact={deleteContact}
+            />
           )}
         </>
       )}
@@ -35,3 +39,7 @@ export const ContactsSection = () => {
 };
 
 export default ContactsSection;
+
+ContactsSection.propTypes = {
+  deleteContact: PropTypes.func.isRequired,
+};

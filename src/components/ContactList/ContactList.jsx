@@ -1,18 +1,7 @@
 import PropTypes from 'prop-types';
-import { useDeleteContactMutation } from 'redux/contacts/contactsApi';
 import { List, ListItem, Button } from './ContactList.styled';
-import { Notify } from 'notiflix';
 
-const ContactList = ({ contacts }) => {
-  const [deleteContact, deleteRes] = useDeleteContactMutation();
-
-  if (deleteRes.isError) {
-    Notify.failure(`${deleteRes?.error?.status}! ${deleteRes?.error?.data}`);
-  }
-  if (deleteRes.isSuccess) {
-    Notify.success(`Contact "${deleteRes.data?.name}" deleted successfully`);
-  }
-
+const ContactList = ({ contacts, deleteContact }) => {
   return (
     <List>
       {contacts.map(({ id, name, phone }) => (
@@ -44,4 +33,5 @@ ContactList.propTypes = {
       phone: PropTypes.string.isRequired,
     }).isRequired
   ).isRequired,
+  deleteContact: PropTypes.func.isRequired,
 };
