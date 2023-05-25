@@ -3,6 +3,7 @@ import { MainContainer, MainHeading } from './App/App.styled';
 import ContactForm from './ContactForm';
 import ContactsSection from './ContactsSection';
 import { Notify } from 'notiflix';
+import Loader from './Loader/Loader';
 
 export function App() {
   const [deleteContact, deleteRes] = useDeleteContactMutation();
@@ -17,6 +18,7 @@ export function App() {
     <MainContainer>
       <MainHeading>Phonebook</MainHeading>
       <ContactForm />
+      {deleteRes.isLoading && <Loader />}
       <ContactsSection deleteContact={deleteContact} />
     </MainContainer>
   );
